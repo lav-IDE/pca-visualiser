@@ -129,22 +129,22 @@ export default function DemoPage() {
 	const closeToBest = bestAngle != null && Math.abs(((projectionAngle - bestAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI) < (Math.PI / 180) * 2; // within 2°
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+		<div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden flex flex-col px-8 py-12">
 			{/* Background */}
 			<div className="absolute inset-0 overflow-hidden">
 				<div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
 				<div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
 			</div>
 			{/* Header */}
-			<div className="relative z-10 pt-8 px-4">
-				<button onClick={() => router.push('/')} className="mb-4 px-6 py-2 bg-white/10 backdrop-blur-lg text-white rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20">← Back to Home</button>
-				<div className="text-center mb-6">
-					<h1 className="text-5xl md:text-6xl font-black text-white mb-4">3D → 2D (Your Metrics)</h1>
-					<p className="text-xl text-purple-200">Pick any three metrics. Project them onto the principal axis.</p>
+			<div className="relative z-10 pt-8 px-4 mb-12">
+				<button onClick={() => router.push('/')} className="mb-8 px-7 py-3 bg-white/10 backdrop-blur-lg text-white rounded-full hover:bg-white/20 transition-all duration-300 border border-white/20 font-semibold text-base">← Back to Home</button>
+				<div className="mb-8">
+					<h1 className="text-6xl lg:text-7xl font-black text-white mb-6">3D → 2D (Your Metrics)</h1>
+					<p className="text-2xl text-purple-200">Pick any three metrics. Project them onto the principal axis.</p>
 				</div>
 				{/* Visual explanation (beads = your chosen datapoints) */}
-				<div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20 text-center mb-6">
-					<p className="text-purple-100 text-sm">
+				<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 text-center mb-8">
+					<p className="text-purple-100 text-base">
 						What you see as beads are <span className="font-semibold">your companies</span> plotted by the three metrics you selected.
 						The slider rotates a line (principal axis). We drop each bead onto that line and show their positions in 2D.
 						Snap to the PCA angle when the badge turns green—the story along that line is clearest there.
@@ -152,20 +152,20 @@ export default function DemoPage() {
 				</div>
 			</div>
 			{/* Main content */}
-			<div className="relative z-10 max-w-7xl mx-auto px-4 pb-8">
+			<div className="relative z-10 max-w-7xl mx-auto px-4 pb-8 flex-1 flex flex-col gap-8">
 				{/* Controls */}
-				<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-					<div className="grid md:grid-cols-2 gap-6">
+				<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-6">
+					<div className="grid md:grid-cols-2 gap-8">
 						<div>
-							<h3 className="text-white font-bold mb-3">Choose 3 Metrics</h3>
-							<div className="flex flex-wrap gap-2">
+							<h3 className="text-white font-bold text-lg mb-4">Choose 3 Metrics</h3>
+							<div className="flex flex-wrap gap-3">
 								{metricKeys.map((key) => {
 									const active = selectedMetrics.includes(key);
 									return (
 										<button
 											key={key}
 											onClick={() => toggleMetric(key)}
-											className={`px-3 py-2 rounded-full text-sm font-semibold transition-all ${active ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'bg-white text-gray-800 hover:bg-purple-50'}`}
+											className={`px-4 py-2 rounded-full text-base font-semibold transition-all ${active ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg' : 'bg-white text-gray-800 hover:bg-purple-50'}`}
 										>
 											{metricLabels[key]}
 										</button>
@@ -175,33 +175,33 @@ export default function DemoPage() {
 							<p className="text-purple-200 text-xs mt-2">Selected: {selectedMetrics.map(m => metricLabels[m]).join(', ')}</p>
 						</div>
 						<div>
-							<h3 className="text-white font-bold mb-3">Principal Axis Angle</h3>
+							<h3 className="text-white font-bold text-lg mb-4">Principal Axis Angle</h3>
 							<div className="flex items-center gap-4">
 								<input type="range" min="0" max={Math.PI * 2} step="0.01" value={projectionAngle} onChange={(e) => handleAngleChange(parseFloat(e.target.value))} className="flex-1 h-3 bg-white/20 rounded-lg appearance-none cursor-pointer slider" />
-								<div className="text-white font-mono min-w-[80px] text-right">{(projectionAngle * 180 / Math.PI).toFixed(1)}°</div>
+								<div className="text-white font-mono min-w-[100px] text-right text-base">{(projectionAngle * 180 / Math.PI).toFixed(1)}°</div>
 							</div>
-							<div className="flex items-center gap-3 mt-3">
+							<div className="flex items-center gap-3 mt-4">
 								{bestAngle != null && (
-									<div className={`px-3 py-2 rounded-full text-xs font-semibold ${closeToBest ? 'bg-green-500 text-white' : 'bg-white/20 text-white'}`}>
+									<div className={`px-4 py-2 rounded-full text-sm font-semibold ${closeToBest ? 'bg-green-500 text-white' : 'bg-white/20 text-white'}`}>
 										Optimal: {(bestAngle * 180 / Math.PI).toFixed(1)}° • Alignment: {bestAlignmentPct}%
 									</div>
 								)}
 								{bestAngle != null && (
-									<button onClick={() => handleAngleChange(bestAngle)} className="px-3 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700">
+									<button onClick={() => handleAngleChange(bestAngle)} className="px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700">
 										Snap to Optimal
 									</button>
 								)}
 							</div>
-							<p className="text-purple-200 text-xs mt-2">Hint: when the badge turns green, you're on the PCA principal axis.</p>
+							<p className="text-purple-200 text-sm mt-2">Hint: when the badge turns green, you're on the PCA principal axis.</p>
 						</div>
 					</div>
 				</div>
-				{/* 3D and 2D views */}
-				<div className="grid md:grid-cols-2 gap-6">
-					{/* 3D View */}
-					<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-						<h2 className="text-2xl font-bold text-white mb-4 text-center">3D Data Points</h2>
-						<div className="h-[420px] rounded-lg overflow-hidden bg-black/20">
+			{/* 3D and 2D views */}
+			<div className="grid md:grid-cols-2 gap-8 flex-1">
+				{/* 3D View */}
+				<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 flex flex-col">
+					<h2 className="text-3xl font-bold text-white mb-6 text-center">3D Data Points</h2>
+					<div className="h-[500px] rounded-lg overflow-hidden bg-black/20 flex-1">
 							{typeof window !== "undefined" && data3D.length > 0 && (
 								<SceneWrapper data={data3D} projectionAngle={projectionAngle} />
 							)}

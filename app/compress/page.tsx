@@ -41,7 +41,7 @@ export default function CompressPage() {
 	useEffect(() => {
 		if (data.length === 0) return;
 		// If all 8 metrics are selected in the correct order, use extractFeatures for consistency
-		const all8Metrics = ['pe','pb','eps','volatility','debtRatio','roe','roa','oneYearReturn'];
+		const all8Metrics: (typeof metricKeys)[number][] = ['pe','pb','eps','volatility','debtRatio','roe','roa','oneYearReturn'];
 		const isAll8Selected = selected.length === 8 && all8Metrics.every(m => selected.includes(m));
 		
 		let X: number[][];
