@@ -24,10 +24,9 @@ export default function AfterPCASection({ data, pcaResult }: AfterPCASectionProp
   const remainingVariance = (100 - parseFloat(totalVarianceExplained)).toFixed(1);
 
   // Generate vibrant colors
-  const colors = pcaData.map((_, idx) => {
-    const hue = (idx * 137.5) % 360;
-    return `hsl(${hue}, 70%, 60%)`;
-  });
+  // Use a single harmonious color for all datapoints
+  const pointColor = '#8b5cf6';
+  const colors = pcaData.map(() => pointColor);
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload[0]) {
@@ -117,14 +116,14 @@ export default function AfterPCASection({ data, pcaResult }: AfterPCASectionProp
                 <Scatter 
                   name="Companies" 
                   data={pcaData} 
-                  fill="#8b5cf6"
+                  fill={pointColor}
                   shape="circle"
                 >
                   {pcaData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={colors[index]}
-                      opacity={0.8}
+                      fill={pointColor}
+                      opacity={0.85}
                     />
                   ))}
                 </Scatter>

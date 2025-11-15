@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-export default function RawThreeScene({ data, projectionAngle }: { data: number[][]; projectionAngle: number }) {
+export default function RawThreeScene({ data, components, rotation }: { data: number[][]; components?: number[][] | null; rotation: number }) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const axisGroupRef = useRef<THREE.Group | null>(null);
 	const controlsRef = useRef<OrbitControls | null>(null);
@@ -136,38 +136,45 @@ export default function RawThreeScene({ data, projectionAngle }: { data: number[
 		};
 	}, [data]);
 
-	// Update principal axis when angle changes
+	// Update principal plane when PCA components or rotation change
 	useEffect(() => {
 		if (!axisGroupRef.current) return;
 		const axisGroup = axisGroupRef.current;
 		while (axisGroup.children.length) axisGroup.remove(axisGroup.children[0]);
 
-		// Length scaled to span across points but not exceed dataset range
 		const radius = radiusRef.current;
-		const length = Math.max(8, radius * 1.8); // shorter than before so it doesn't overshoot
-		const theta = projectionAngle;
-		const phi = projectionAngle * 0.5;
-		const x = Math.sin(phi) * Math.cos(theta) * length;
-		const y = Math.sin(phi) * Math.sin(theta) * length;
-		const z = Math.cos(phi) * length;
+		const size = Math.max(8, radius * 2.5);
 
-		const direction = new THREE.Vector3(x, y, z).normalize();
-		const axis = new THREE.Vector3(0, 1, 0);
-		const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction);
+		if (components && components.length >= 2) {
+			// build basis from PCA components
+			const u = new THREE.Vector3(components[0][0], components[0][1], components[0][2]).normalize();
+			const v = new THREE.Vector3(components[1][0], components[1][1], components[1][2]).normalize();
 
-		const cylGeo = new THREE.CylinderGeometry(0.08, 0.08, length * 2, 16);
-		const cylMat = new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 0.6 });
-		const cylinder = new THREE.Mesh(cylGeo, cylMat);
-		cylinder.quaternion.copy(quaternion);
-		axisGroup.add(cylinder);
+			// rotate basis vectors within their plane by 'rotation' (visual rotation)
+			const rot = rotation || 0;
+			const uRot = u.clone().multiplyScalar(Math.cos(rot)).add(v.clone().multiplyScalar(Math.sin(rot))).normalize();
+			const vRot = v.clone().multiplyScalar(Math.cos(rot)).sub(u.clone().multiplyScalar(Math.sin(rot))).normalize();
+			const normal = uRot.clone().cross(vRot).normalize();
 
-		const coneGeo = new THREE.ConeGeometry(0.35, 1, 8);
-		const coneMat = cylMat.clone();
-		const cone = new THREE.Mesh(coneGeo, coneMat);
-		cone.position.set(x * 0.95, y * 0.95, z * 0.95);
-		cone.quaternion.copy(quaternion);
-		axisGroup.add(cone);
-	}, [projectionAngle]);
+			// plane mesh
+			const planeGeo = new THREE.PlaneGeometry(size, size, 8, 8);
+			const planeMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, opacity: 0.08, transparent: true, side: THREE.DoubleSide });
+			const plane = new THREE.Mesh(planeGeo, planeMat);
+
+			// align plane so its local X= uRot, Y= vRot, Z = normal
+			const basis = new THREE.Matrix4();
+			basis.makeBasis(uRot, vRot, normal);
+			plane.setRotationFromMatrix(basis);
+			plane.position.copy(centerRef.current);
+			axisGroup.add(plane);
+
+			// grid on plane (using GridHelper and orienting it)
+			const grid = new THREE.GridHelper(size, 10, 0x6b7280, 0x374151);
+			grid.position.copy(centerRef.current);
+			grid.setRotationFromMatrix(basis);
+			axisGroup.add(grid);
+		}
+	}, [components, rotation]);
 
 	return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }

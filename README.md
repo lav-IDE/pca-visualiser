@@ -7,7 +7,7 @@ A Next.js 15 web application that visually explains Principal Component Analysis
 - **Hero Section**: Simple analogies explaining PCA concepts
 - **Finance Dataset**: Sample dataset with 25 companies and 8 financial metrics
 - **Before PCA Visualization**: Multiple 2D scatter plots showing raw data
-- **After PCA Visualization**: 2D scatter plot showing compressed data
+- **After PCA Visualization**: 2D scatter plot showing compressed data. Includes an interactive demo that lets you rotate the projection axis, snap to the PCA-computed axis, and view the PCA angle in degrees. Datapoints now use a single consistent color and the 1D projection view centers the projection axis for clearer comparison.
 - **Closing Summary**: Key takeaways and use cases
 
 ## Tech Stack
@@ -54,8 +54,11 @@ npm run dev
 ##Screenshots
 Screen	    Preview
 Home Page	![Home Page](./components/ss/home.png)
-Explanation Page	![Explanation Page](./components/ss/explanation.png)
-PCA Flow	![Flow Page](./components/ss/flow.png)
+Explanation Page 1	![Explanation Page](./components/ss/explanation_3.png)
+PCA Flow	![Flow Page](./components/ss/explanation.png)
+PCA Flow	![](./components/ss/explanation_2.png)
+Maths	![Maths](./components/ss/maths.png)
+Maths	![Maths](./components/ss/maths_2.png)
 Output Page	![Result Page](./components/ss/result.png)
 
 ## Key Concepts Explained
